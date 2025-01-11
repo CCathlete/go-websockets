@@ -63,6 +63,19 @@ type WsJsonResponse struct {
 	MessageType string `josn:"message_type"`
 }
 
+// We want to inherit all fields and methods & maybe add methods of our own so we need to wrap in a struct.
+type WebSocketConnection struct {
+	*websocket.Conn
+}
+
+// The payload of the ws request body.
+type WsPayload struct {
+	Action   string              `json:"action"`
+	Username string              `json:"username"`
+	Message  string              `json:"message"`
+	Conn     WebSocketConnection `json:"-"` // Ommitting from JSON
+}
+
 // Upgrading connection to websocket.
 var WsEndpoint http.HandlerFunc = func(
 	w http.ResponseWriter, r *http.Request,
@@ -75,12 +88,14 @@ var WsEndpoint http.HandlerFunc = func(
 
 	log.Println("Client connected to ws endpoint.")
 
-	var response WsJsonResponse
+	response := WsJsonResponse{}
 	response.Message = `<em><small>Connected to server</small></em>`
 
 	err = ws.WriteJSON(response)
 	if err != nil {
 		log.Println(err)
 	}
+
+	// TODO: Create a channel to handle incoming messages and write a response.
 
 }
