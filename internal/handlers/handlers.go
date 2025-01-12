@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -8,12 +9,18 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+// For handling incoming messages.
+var wsChan = make(chan WsPayload)
+
+var clients = make(map[WebSocketConnection]string)
+
 var views = jet.NewSet(
 	// Setting up a filesystem with root at projec_root/html.
 	jet.NewOSFileSystemLoader("./html"),
 	jet.InDevelopmentMode(),
 )
 
+// Upgrading a connection to websocket.
 var connectionUpgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
@@ -76,7 +83,11 @@ type WsPayload struct {
 	Conn     WebSocketConnection `json:"-"` // Ommitting from JSON
 }
 
-// Upgrading connection to websocket.
+// ---------------------------------------------------------------------
+// ------------- Defining handlers as handlerFuncs. --------------------
+// ---------------------------------------------------------------------
+
+// When the /ws endpoint is hit we trigger a goroutine that listens for messages in a ws and send them to the ws channel, which is being read by another goroutine that runs the ReadFromWsChannel function.
 var WsEndpoint http.HandlerFunc = func(
 	w http.ResponseWriter, r *http.Request,
 ) {
@@ -91,11 +102,58 @@ var WsEndpoint http.HandlerFunc = func(
 	response := WsJsonResponse{}
 	response.Message = `<em><small>Connected to server</small></em>`
 
+	conn := WebSocketConnection{Conn: ws}
+	clients[conn] = "PLACEHOLDER"
+
 	err = ws.WriteJSON(response)
 	if err != nil {
 		log.Println(err)
 	}
 
-	// TODO: Create a channel to handle incoming messages and write a response.
+	go ListenForWs(&conn)
 
+}
+
+// Listens for ws messages and send them to the ws channel.
+func ListenForWs(conn *WebSocketConnection) {
+	defer func() {
+		if r := recover(); r != nil {
+			log.Printf("Error: %v\n", r)
+		}
+	}()
+
+	var payload WsPayload
+	for {
+		err := conn.ReadJSON(&payload)
+		if err != nil {
+			// No payload, do nothing.
+		} else {
+			wsChan <- payload
+		}
+	}
+}
+
+func ReadFromWsChannel() {
+	var response WsJsonResponse
+
+	for {
+		event := <-wsChan
+
+		response.Action = "Got here"
+		response.Message =
+			fmt.Sprintf("Some message, and action was %s", event.Action)
+		broadcastToAll(response)
+	}
+}
+
+func broadcastToAll(response WsJsonResponse) {
+	for client := range clients {
+		err := client.WriteJSON(response)
+		if err != nil {
+			// If we can't send a response to the client we close the connection.
+			log.Println("Error broadcasting to client.")
+			client.Close()
+			delete(clients, client)
+		}
+	}
 }
