@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sort"
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/gorilla/websocket"
@@ -65,9 +66,10 @@ var Home http.HandlerFunc = func(
 }
 
 type WsJsonResponse struct {
-	Action      string `json:"action"`
-	Message     string `json:"message"`
-	MessageType string `josn:"message_type"`
+	Action         string   `json:"action"`
+	Message        string   `json:"message"`
+	MessageType    string   `json:"message_type"`
+	ConnectedUsers []string `json:"connected_users"`
 }
 
 // We want to inherit all fields and methods & maybe add methods of our own so we need to wrap in a struct.
@@ -103,7 +105,7 @@ var WsEndpoint http.HandlerFunc = func(
 	response.Message = `<em><small>Connected to server</small></em>`
 
 	conn := WebSocketConnection{Conn: ws}
-	clients[conn] = "PLACEHOLDER"
+	clients[conn] = ""
 
 	err = ws.WriteJSON(response)
 	if err != nil {
@@ -128,22 +130,54 @@ func ListenForWs(conn *WebSocketConnection) {
 		if err != nil {
 			// No payload, do nothing.
 		} else {
+			//
+			payload.Conn = *conn
 			wsChan <- payload
 		}
 	}
 }
 
 func ReadFromWsChannel() {
-	var response WsJsonResponse
+	response := WsJsonResponse{}
 
+	// Getting a list of users and broacasting it back.
 	for {
 		event := <-wsChan
 
-		response.Action = "Got here"
-		response.Message =
-			fmt.Sprintf("Some message, and action was %s", event.Action)
-		broadcastToAll(response)
+		switch event.Action {
+		case "username":
+			// For each event we're reading from the channel, we're registering the connection and username in the clients map.
+			clients[event.Conn] = event.Username
+			response.ConnectedUsers = refreshUsersList()
+			response.Action = "list_users"
+			log.Println("Reading from ws channel. Response: ", response)
+			broadcastToAll(response)
+		case "left":
+			response.Action = "list_users"
+			delete(clients, event.Conn)
+			response.ConnectedUsers = refreshUsersList()
+			log.Println("Reading from ws channel. Response: ", response)
+			broadcastToAll(response)
+		case "broadcast":
+			response.Action = "broadcast"
+			response.Message = fmt.Sprintf("<strong>%s</strong>: %s",
+				event.Username, event.Message)
+			broadcastToAll(response)
+		}
 	}
+}
+
+// Refreshes the users list that are currently registered in the clients map.
+func refreshUsersList() (users []string) {
+
+	for _, username := range clients {
+		if username != "" {
+			users = append(users, username)
+		}
+	}
+	sort.Strings(users)
+
+	return
 }
 
 func broadcastToAll(response WsJsonResponse) {
