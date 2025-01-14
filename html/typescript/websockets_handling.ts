@@ -1,3 +1,4 @@
+// Stating that  notie is being loaded and defined somewhere else (before calling this script).
 declare const notie: any;
 
 let socket: WebSocket | null = null;
