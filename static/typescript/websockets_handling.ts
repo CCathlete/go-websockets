@@ -1,7 +1,17 @@
 // Stating that  notie is being loaded and defined somewhere else (before calling this script).
 declare const notie: any;
+declare class ReconnectingWebSocket {
+    constructor(url: string);
+    send(data: string): void;
+    close(): void;
+    onopen?: () => void;
+    onclose?: () => void;
+    onmessage?: (event: MessageEvent) => void;
+    onerror?: (error: Event) => void;
+}
 
-let socket: WebSocket | null = null;
+
+let socket: ReconnectingWebSocket | null = null;
 const output: HTMLElement | null = document.getElementById("output");
 const userField: HTMLInputElement | null = document.getElementById("username") as HTMLInputElement;
 const messageField: HTMLInputElement | null = document.getElementById("message") as HTMLInputElement;
@@ -15,7 +25,7 @@ window.onbeforeunload = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    socket = new WebSocket("ws://127.0.0.1:8080/ws");
+    socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
 
     socket.onopen = () => {
         console.log("Successfully connected via websocket.");
