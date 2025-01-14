@@ -13,14 +13,14 @@ func routes() http.Handler {
 
 	// Setting up a file server object to serve static js files.
 	// It has an inner filesystem with a root folder at ./html/typescript.
-	staticJsFileHandler := http.FileServer(http.Dir("./html/typescript"))
+	staticJsFileHandler := http.FileServer(http.Dir("./static"))
 
 	// Adjusting the request url to look like a path inside ./html/typescript.
 	staticJsFileHandler =
-		http.StripPrefix("/typescript/", staticJsFileHandler)
+		http.StripPrefix("/static/", staticJsFileHandler)
 
 	// Our html file, located in ./html will send a get request to /typescript/<file>.js, the prefix will get stripped and the handler will look for the file inside its root folder.
-	mux.Get("/typescript/", staticJsFileHandler)
+	mux.Get("/static/", staticJsFileHandler)
 	mux.Get("/", handlers.Home)
 	mux.Get("/ws", handlers.WsEndpoint)
 
