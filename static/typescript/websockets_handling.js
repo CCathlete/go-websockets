@@ -11,7 +11,7 @@ window.onbeforeunload = function () {
 };
 document.addEventListener("DOMContentLoaded", function () {
     var _a, _b;
-    socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
+    socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws", null, { debug: true, reconnectInterval: 3000 });
     socket.onopen = function () {
         console.log("Successfully connected via websocket.");
     };

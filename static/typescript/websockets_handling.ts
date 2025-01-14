@@ -1,7 +1,11 @@
 // Stating that  notie is being loaded and defined somewhere else (before calling this script).
 declare const notie: any;
 declare class ReconnectingWebSocket {
-    constructor(url: string);
+    constructor(
+        url: string, 
+        protocols?: null | string | string[],
+        options?: any
+    );
     send(data: string): void;
     close(): void;
     onopen?: () => void;
@@ -25,7 +29,11 @@ window.onbeforeunload = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws");
+    socket = new ReconnectingWebSocket(
+        "ws://127.0.0.1:8080/ws",
+        null,
+        { debug: true, reconnectInterval: 3000 }
+        );
 
     socket.onopen = () => {
         console.log("Successfully connected via websocket.");
