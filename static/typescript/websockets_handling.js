@@ -12,11 +12,22 @@ window.onbeforeunload = function () {
 document.addEventListener("DOMContentLoaded", function () {
     var _a, _b;
     socket = new ReconnectingWebSocket("ws://127.0.0.1:8080/ws", null, { debug: true, reconnectInterval: 3000 });
+    var offline = "<span class=\"badge bg-danger\">Offline</span>";
+    var online = "<span class=\"badge bg-success\">Connected</span>";
+    var statusDiv = document.getElementById("status");
     socket.onopen = function () {
         console.log("Successfully connected via websocket.");
+        if (statusDiv) {
+            statusDiv.innerHTML = online;
+        }
+        ;
     };
     socket.onclose = function () {
         console.log("Connection closed.");
+        if (statusDiv) {
+            statusDiv.innerHTML = offline;
+        }
+        ;
     };
     socket.onerror = function (error) {
         console.log("There was an error: ", error);

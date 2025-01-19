@@ -2,7 +2,7 @@
 declare const notie: any;
 declare class ReconnectingWebSocket {
     constructor(
-        url: string, 
+        url: string,
         protocols?: null | string | string[],
         options?: any
     );
@@ -33,14 +33,27 @@ document.addEventListener("DOMContentLoaded", () => {
         "ws://127.0.0.1:8080/ws",
         null,
         { debug: true, reconnectInterval: 3000 }
-        );
+    );
+
+    const offline: string =
+        `<span class="badge bg-danger">Offline</span>`;
+    const online: string =
+        `<span class="badge bg-success">Connected</span>`;
+    let statusDiv: HTMLElement | null =
+        document.getElementById("status");
 
     socket.onopen = () => {
         console.log("Successfully connected via websocket.");
+        if (statusDiv) {
+            statusDiv.innerHTML = online;
+        };
     };
 
     socket.onclose = () => {
         console.log("Connection closed.");
+        if (statusDiv) {
+            statusDiv.innerHTML = offline;
+        };
     };
 
     socket.onerror = (error: Event) => {

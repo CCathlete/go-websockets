@@ -49,14 +49,18 @@
                 </div>
 
                 <hr>
-                <a href="javascript:void(0);" class="btn btn-outline-secondary" id="sendBtn">Send Message</a>
+                <!-- <a href="javascript:void(0);" class="btn btn-outline-secondary" id="sendBtn">Send Message</a> -->
+                <button class="btn btn-outline-secondary" id="sendBtn">Send Message</button>
 
-                <hr>
+                <div id="status" class="mt-2 float-end">
+
+                </div>
+
                 <input type="hidden" name="action" id="action">
 
                 <div id="output" class="chatbox">
-
                 </div>
+
             </div>
             <div class="col-md-4">
                 <h3>Who's Online</h3>
