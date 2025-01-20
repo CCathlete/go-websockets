@@ -18,10 +18,10 @@ $$ language plpgsql
           id serial primary key,
           first_name varchar(50) not null unique,
           last_name varchar(50) not null unique,
-          user_active int default 0,
+          user_active boolean default false,
           access_level int default 3,
           email varchar(100) not null unique,
-          password varchar(60) not null,
+          password_hash varchar(60) not null,
           deleted_at timestamptz default null,
           created_at timestamptz default now(),
           updated_at timestamptz default now()
