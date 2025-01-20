@@ -39,25 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
         `<span class="badge bg-danger">Offline</span>`;
     const online: string =
         `<span class="badge bg-success">Connected</span>`;
-    let statusDiv: HTMLElement | null =
-        document.getElementById("status");
+
+    let statusDiv =
+        document.getElementById("status") as HTMLElement;
 
     socket.onopen = () => {
         console.log("Successfully connected via websocket.");
-        if (statusDiv) {
-            statusDiv.innerHTML = online;
-        };
+        statusDiv.innerHTML = online;
     };
 
     socket.onclose = () => {
         console.log("Connection closed.");
-        if (statusDiv) {
-            statusDiv.innerHTML = offline;
-        };
+        statusDiv.innerHTML = offline;
     };
 
     socket.onerror = (error: Event) => {
         console.log("There was an error: ", error);
+        statusDiv.innerHTML = offline;
     };
 
     socket.onmessage = (msg: MessageEvent) => {

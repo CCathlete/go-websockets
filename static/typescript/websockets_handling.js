@@ -17,20 +17,15 @@ document.addEventListener("DOMContentLoaded", function () {
     var statusDiv = document.getElementById("status");
     socket.onopen = function () {
         console.log("Successfully connected via websocket.");
-        if (statusDiv) {
-            statusDiv.innerHTML = online;
-        }
-        ;
+        statusDiv.innerHTML = online;
     };
     socket.onclose = function () {
         console.log("Connection closed.");
-        if (statusDiv) {
-            statusDiv.innerHTML = offline;
-        }
-        ;
+        statusDiv.innerHTML = offline;
     };
     socket.onerror = function (error) {
         console.log("There was an error: ", error);
+        statusDiv.innerHTML = offline;
     };
     socket.onmessage = function (msg) {
         var j = JSON.parse(msg.data);

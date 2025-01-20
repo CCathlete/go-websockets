@@ -10,6 +10,7 @@ func main() {
 	mux := routes()
 
 	log.Println("Starting channel listener.")
+	// Triggering an infinite listening loop.
 	go handlers.ReadFromWsChannel()
 
 	log.Println("Starting the server on port 8080")

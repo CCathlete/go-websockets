@@ -58,7 +58,7 @@
 
                 <input type="hidden" name="action" id="action">
 
-                <div id="output" class="chatbox">
+                <div id="output" class="chatbox mt-3">
                 </div>
 
             </div>

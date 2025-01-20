@@ -107,6 +107,7 @@ var WsEndpoint http.HandlerFunc = func(
 	conn := WebSocketConnection{Conn: ws}
 	clients[conn] = ""
 
+	// What's the point in this? Where is this visible?
 	err = ws.WriteJSON(response)
 	if err != nil {
 		log.Println(err)
@@ -120,20 +121,24 @@ var WsEndpoint http.HandlerFunc = func(
 func ListenForWs(conn *WebSocketConnection) {
 	defer func() {
 		if r := recover(); r != nil {
-			log.Printf("Error: %v\n", r)
+			log.Printf("ListenForWs: %v\n", r)
 		}
 	}()
 
 	var payload WsPayload
 	for {
+
 		err := conn.ReadJSON(&payload)
 		if err != nil {
+			// The conn object will panic if a websocket hadn't been opened.
+
 			// No payload, do nothing.
 		} else {
 			//
 			payload.Conn = *conn
 			wsChan <- payload
 		}
+
 	}
 }
 
