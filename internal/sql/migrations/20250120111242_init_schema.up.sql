@@ -21,7 +21,7 @@ $$ language plpgsql
           user_active boolean default false,
           access_level int default 3,
           email varchar(100) not null unique,
-          password_hash varchar(60) not null,
+          password_hash varchar(255) not null,
           deleted_at timestamptz default null,
           created_at timestamptz default now(),
           updated_at timestamptz default now()
