@@ -33,14 +33,14 @@ type Session struct {
 }
 
 type User struct {
-	ID           int32         `json:"id"`
-	FirstName    string        `json:"first_name"`
-	LastName     string        `json:"last_name"`
-	UserActive   sql.NullBool  `json:"user_active"`
-	AccessLevel  sql.NullInt32 `json:"access_level"`
-	Email        string        `json:"email"`
-	PasswordHash string        `json:"password_hash"`
-	DeletedAt    sql.NullTime  `json:"deleted_at"`
-	CreatedAt    sql.NullTime  `json:"created_at"`
-	UpdatedAt    sql.NullTime  `json:"updated_at"`
+	ID           int32        `json:"id"`
+	FirstName    string       `json:"first_name"`
+	LastName     string       `json:"last_name"`
+	UserActive   bool         `json:"user_active"`
+	AccessLevel  int32        `json:"access_level"`
+	Email        string       `json:"email"`
+	PasswordHash string       `json:"password_hash"`
+	DeletedAt    sql.NullTime `json:"deleted_at"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    sql.NullTime `json:"updated_at"`
 }

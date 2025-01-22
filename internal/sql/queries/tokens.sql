@@ -8,6 +8,11 @@
     where remember_token = $1
 ;
 
+-- name: DeleteTokenByUserID :exec
+   delete from remember_tokens
+    where user_id = $1
+;
+
 -- name: CheckForToken :one
    select exists (
              select 1

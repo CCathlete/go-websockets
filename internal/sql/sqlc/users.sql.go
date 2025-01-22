@@ -7,7 +7,6 @@ package sqlc
 
 import (
 	"context"
-	"database/sql"
 )
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -36,12 +35,12 @@ returning id
 `
 
 type InsertUserParams struct {
-	FirstName    string        `json:"first_name"`
-	LastName     string        `json:"last_name"`
-	Email        string        `json:"email"`
-	PasswordHash string        `json:"password_hash"`
-	AccessLevel  sql.NullInt32 `json:"access_level"`
-	UserActive   sql.NullBool  `json:"user_active"`
+	FirstName    string `json:"first_name"`
+	LastName     string `json:"last_name"`
+	Email        string `json:"email"`
+	PasswordHash string `json:"password_hash"`
+	AccessLevel  int32  `json:"access_level"`
+	UserActive   bool   `json:"user_active"`
 }
 
 func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (int32, error) {
@@ -87,12 +86,12 @@ returning id, first_name, last_name, user_active, access_level, email, password_
 `
 
 type UpdateUserParams struct {
-	FirstName   string        `json:"first_name"`
-	LastName    string        `json:"last_name"`
-	UserActive  sql.NullBool  `json:"user_active"`
-	Email       string        `json:"email"`
-	AccessLevel sql.NullInt32 `json:"access_level"`
-	ID          int32         `json:"id"`
+	FirstName   string `json:"first_name"`
+	LastName    string `json:"last_name"`
+	UserActive  bool   `json:"user_active"`
+	Email       string `json:"email"`
+	AccessLevel int32  `json:"access_level"`
+	ID          int32  `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {

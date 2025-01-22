@@ -41,12 +41,41 @@ func (repo *PGRepo) UpdateUser(params UpdateUserParams,
 
 // ---------------------------------------------------------------------
 
-type InsertUserParams = sqlc.InsertUserParams
+type InsertUserParams struct {
+	FirstName   string
+	LastName    string
+	Email       string
+	Password    string
+	AccessLevel int32
+	UserActive  bool
+}
 
 func (repo *PGRepo) InsertUser(params InsertUserParams,
 ) (uid int32, err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()
+
+	// Setting up the parameters for the insert query.
+	rawParams := sqlc.InsertUserParams{
+		FirstName:   params.FirstName,
+		LastName:    params.LastName,
+		Email:       params.Email,
+		AccessLevel: params.AccessLevel,
+		UserActive:  params.UserActive,
+	}
+
+	hashedPasswordString, err := encryption.HashPassword(params.Password)
+	if err != nil {
+		log.Printf("InsertUser: Error hashing password, %v\n", err)
+		err = ErrInsertingUser
+	}
+
+	rawParams.PasswordHash = hashedPasswordString
+
+	uid, err = repo.queryEngine.InsertUser(ctx, rawParams)
+	if err != nil {
+		err = ErrInsertingUser
+	}
 
 	return
 }
@@ -78,6 +107,12 @@ func (repo *PGRepo) UpdatePassword(params UpdatePasswordParams,
 	if err != nil {
 		log.Printf("UpdatePassword: %v\n", err)
 		err = ErrUpdatingPassword
+	}
+
+	err = repo.queryEngine.DeleteTokenByUserID(ctx, params.ID)
+	if err != nil {
+		log.Printf("UpdatePassword: %v\n", err)
+		err = ErrDeleteToken
 	}
 
 	return

@@ -12,6 +12,7 @@ type Querier interface {
 	AllPreferences(ctx context.Context) ([]AllPreferencesRow, error)
 	CheckForToken(ctx context.Context, arg CheckForTokenParams) (bool, error)
 	DeleteToken(ctx context.Context, rememberToken string) error
+	DeleteTokenByUserID(ctx context.Context, userID int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetTokenByID(ctx context.Context, arg GetTokenByIDParams) (GetTokenByIDRow, error)
 	InsertRememberMeToken(ctx context.Context, arg InsertRememberMeTokenParams) error
