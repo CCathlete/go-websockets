@@ -35,7 +35,7 @@ func (repo *PGRepo) Close() (err error) {
 func (repo *PGRepo) WithTx() (err error) {
 
 	// Creates a new transaction object.
-	tx, err := repo.db.BeginTx(nil, nil)
+	tx, err := repo.db.BeginTx(repo.Context, nil)
 	if err != nil {
 		return
 	}
