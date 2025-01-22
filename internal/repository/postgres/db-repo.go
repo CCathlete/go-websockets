@@ -48,7 +48,7 @@ func (repo *PGRepo) WithTx() (err error) {
 	return
 }
 
-func (repo *PGRepo) commitOrRollback(
+func (repo *PGRepo) CommitOrRollback(
 	tx *sql.Tx,
 	TxExecErr error,
 ) (err error) {
@@ -65,7 +65,7 @@ func (repo *PGRepo) commitOrRollback(
 	case nil:
 		err = tx.Commit()
 		if err != nil {
-			log.Println("Error committing tx: %v", err)
+			log.Printf("Error committing tx: %v\n", err)
 			err = ErrTxCommit
 		}
 		return
@@ -74,7 +74,7 @@ func (repo *PGRepo) commitOrRollback(
 		log.Printf("Tx execution error: %v\nRolling back...", TxExecErr)
 		err = tx.Rollback()
 		if err != nil {
-			log.Println("Error rolling back tx: %v", err)
+			log.Printf("Error rolling back tx: %v\n", err)
 			err = ErrTxRollback
 		}
 	}
