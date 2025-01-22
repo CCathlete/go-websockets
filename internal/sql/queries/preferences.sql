@@ -15,6 +15,10 @@ insert into preferences (
     name, preferences, created_at, updated_at
 ) values ($1, $2, now(), now());
 
+exception 
+when others then
+raise exception 'Failed to set system preference %', sqlerrm;
+
 end;
 $$
 ;

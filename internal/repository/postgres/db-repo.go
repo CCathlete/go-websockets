@@ -9,19 +9,18 @@ import (
 
 // An adapter for sqlc.Queries that implements the actual postgres DB methods.
 type PGRepo struct {
-	*sqlc.Queries // Meant only for runing queries. DB changes should be done through repo methods operating on the db field.
-
-	db      *sql.DB
-	Context context.Context
+	queryEngine *sqlc.Queries // Meant only for runing queries. DB changes should be done through repo methods operating on the db field.
+	db          *sql.DB
+	Context     context.Context
 }
 
 // A factory for creating a new PGRepo object.
 func New(db *sql.DB) (repo *PGRepo) {
 
 	repo = &PGRepo{
-		Queries: sqlc.New(db),
-		db:      db,
-		Context: context.Background(),
+		queryEngine: sqlc.New(db),
+		db:          db,
+		Context:     context.Background(),
 	}
 
 	return
@@ -44,7 +43,7 @@ func (repo *PGRepo) WithTx() (err error) {
 	// NOTE: The Queries object uses the transaction but the repo maintains the original db object.
 
 	// Turns the underlying db connection into a transaction connection.
-	repo.Queries = repo.Queries.WithTx(tx)
+	repo.queryEngine = repo.queryEngine.WithTx(tx)
 
 	return
 }
@@ -55,7 +54,7 @@ func (repo *PGRepo) commitOrRollback(
 ) (err error) {
 
 	// Registering the original db connection for queries. We already ran the queries relevant to the current tx object, just need to commit or rollback.
-	repo.Queries = sqlc.New(repo.db)
+	repo.queryEngine = sqlc.New(repo.db)
 
 	if tx == nil {
 		err = ErrDiscardedTx
