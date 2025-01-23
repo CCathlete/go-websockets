@@ -25,4 +25,12 @@ var (
 			err,
 		)
 	}
+
+	ErrPasswordAuthentication EncryptionError = func(err error) error {
+		return fmt.Errorf("AuthenticatePassword: %w", err)
+	}
+
+	ErrUserIsDeleted EncryptionError = func(err error) error {
+		return fmt.Errorf("user is deleted: %w", err)
+	}
 )

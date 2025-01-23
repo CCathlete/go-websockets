@@ -9,7 +9,7 @@ import (
 	"vigilante/internal/sql/sqlc"
 )
 
-func (repo *PGRepo) DeleteUser(uid int32) (err error) {
+func (repo *Repo) DeleteUser(uid int32) (err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()
 
@@ -22,7 +22,7 @@ func (repo *PGRepo) DeleteUser(uid int32) (err error) {
 
 type UpdateUserParams = sqlc.UpdateUserParams
 
-func (repo *PGRepo) UpdateUser(params UpdateUserParams,
+func (repo *Repo) UpdateUser(params UpdateUserParams,
 ) (usr models.User, err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()
@@ -50,7 +50,7 @@ type InsertUserParams struct {
 	UserActive  bool
 }
 
-func (repo *PGRepo) InsertUser(params InsertUserParams,
+func (repo *Repo) InsertUser(params InsertUserParams,
 ) (uid int32, err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()
@@ -87,7 +87,7 @@ type UpdatePasswordParams struct {
 	ID       int32
 }
 
-func (repo *PGRepo) UpdatePassword(params UpdatePasswordParams,
+func (repo *Repo) UpdatePassword(params UpdatePasswordParams,
 ) (err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()

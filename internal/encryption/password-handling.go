@@ -16,7 +16,11 @@ func HashPassword(password string,
 		bcrypt.DefaultCost,
 	)
 
-	// Converting the hashed password to base64 because it has a wider range of ascii characters we can use to represent a digit in the string form.
+	// -----------------------------------------------------------------
+	// NOTE: Converting ascii characters to bytes is ok but the other way around could result in 8-bit numbers that doesn't have an ascii character. That's why base64 (6-bit numbers) is used, it maps perfectly to ascii characters.
+	// -----------------------------------------------------------------
+
+	// Converting the hashed password to base64.
 	var conversionBuffer *bytes.Buffer
 	b64Encoder := base64.NewEncoder(
 		base64.StdEncoding,
