@@ -57,7 +57,7 @@ func (repo *PGRepo) CommitOrRollback(
 	repo.queryEngine = sqlc.New(repo.db)
 
 	if tx == nil {
-		err = ErrDiscardedTx
+		err = ErrDiscardedTx(nil)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (repo *PGRepo) CommitOrRollback(
 		err = tx.Commit()
 		if err != nil {
 			log.Printf("Error committing tx: %v\n", err)
-			err = ErrTxCommit
+			err = ErrTxCommit(err)
 		}
 		return
 
@@ -75,7 +75,7 @@ func (repo *PGRepo) CommitOrRollback(
 		err = tx.Rollback()
 		if err != nil {
 			log.Printf("Error rolling back tx: %v\n", err)
-			err = ErrTxRollback
+			err = ErrTxRollback(err)
 		}
 	}
 

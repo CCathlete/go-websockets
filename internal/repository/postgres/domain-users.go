@@ -67,14 +67,14 @@ func (repo *PGRepo) InsertUser(params InsertUserParams,
 	hashedPasswordString, err := encryption.HashPassword(params.Password)
 	if err != nil {
 		log.Printf("InsertUser: Error hashing password, %v\n", err)
-		err = ErrInsertingUser
+		err = ErrInsertingUser(err)
 	}
 
 	rawParams.PasswordHash = hashedPasswordString
 
 	uid, err = repo.queryEngine.InsertUser(ctx, rawParams)
 	if err != nil {
-		err = ErrInsertingUser
+		err = ErrInsertingUser(err)
 	}
 
 	return
@@ -95,7 +95,7 @@ func (repo *PGRepo) UpdatePassword(params UpdatePasswordParams,
 	hashedPasswordString, err := encryption.HashPassword(params.Password)
 	if err != nil {
 		log.Printf("UpdatePassword: %v\n", err)
-		err = ErrUpdatingPassword
+		err = ErrUpdatingPassword(err)
 	}
 
 	// Setting the parameters as they should be sent to the db + running the query.
@@ -106,13 +106,13 @@ func (repo *PGRepo) UpdatePassword(params UpdatePasswordParams,
 	err = repo.queryEngine.UpdatePassword(ctx, queryParams)
 	if err != nil {
 		log.Printf("UpdatePassword: %v\n", err)
-		err = ErrUpdatingPassword
+		err = ErrUpdatingPassword(err)
 	}
 
 	err = repo.queryEngine.DeleteTokenByUserID(ctx, params.ID)
 	if err != nil {
 		log.Printf("UpdatePassword: %v\n", err)
-		err = ErrDeleteToken
+		err = ErrDeleteToken(err)
 	}
 
 	return
