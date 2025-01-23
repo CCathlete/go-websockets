@@ -1,4 +1,4 @@
-package repository
+package storage
 
 import (
 	"vigilante/internal/sql/sqlc"

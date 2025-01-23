@@ -1,4 +1,4 @@
-package postgresrepo
+package postgres
 
 import (
 	"context"
@@ -8,16 +8,16 @@ import (
 )
 
 // An adapter for sqlc.Queries that implements the actual postgres DB methods.
-type PGRepo struct {
+type Repo struct {
 	queryEngine *sqlc.Queries // Meant only for runing queries. DB changes should be done through repo methods operating on the db field.
 	db          *sql.DB
 	Context     context.Context
 }
 
-// A factory for creating a new PGRepo object.
-func New(db *sql.DB) (repo *PGRepo) {
+// A factory for creating a new Repo object.
+func New(db *sql.DB) (repo *Repo) {
 
-	repo = &PGRepo{
+	repo = &Repo{
 		queryEngine: sqlc.New(db),
 		db:          db,
 		Context:     context.Background(),
@@ -26,13 +26,13 @@ func New(db *sql.DB) (repo *PGRepo) {
 	return
 }
 
-func (repo *PGRepo) Close() (err error) {
+func (repo *Repo) Close() (err error) {
 	err = repo.db.Close()
 	return
 }
 
 // Registers a transaction object as the inner db connection.
-func (repo *PGRepo) WithTx() (err error) {
+func (repo *Repo) WithTx() (err error) {
 
 	// Creates a new transaction object.
 	tx, err := repo.db.BeginTx(repo.Context, nil)
@@ -48,7 +48,7 @@ func (repo *PGRepo) WithTx() (err error) {
 	return
 }
 
-func (repo *PGRepo) CommitOrRollback(
+func (repo *Repo) CommitOrRollback(
 	tx *sql.Tx,
 	TxExecErr error,
 ) (err error) {
