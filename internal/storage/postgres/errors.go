@@ -28,6 +28,10 @@ var (
 
 	// User errors.
 
+	ErrGettingUser RepoError = func(err error) error {
+		return fmt.Errorf("%w: error getting user", err)
+	}
+
 	ErrUpdatingPassword RepoError = func(err error) error {
 		return fmt.Errorf("%w: error updating password", err)
 	}

@@ -9,6 +9,32 @@ import (
 	"vigilante/internal/sql/sqlc"
 )
 
+func (repo *Repo) GetUserByID(uid int32) (usr models.User, err error) {
+	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
+	defer cancel()
+
+	rawUsr, err := repo.queryEngine.GetUserByID(ctx, uid)
+	if err != nil {
+		err = ErrGettingUser(err)
+		log.Println(err)
+		return
+	}
+
+	usr = *models.NewUser()
+
+	usr.ID = rawUsr.ID
+	usr.FirstName = rawUsr.FirstName
+	usr.LastName = rawUsr.LastName
+	usr.Email = rawUsr.Email
+	usr.AccessLevel = rawUsr.AccessLevel
+	usr.UserActive = rawUsr.UserActive
+	usr.CreatedAt = rawUsr.CreatedAt
+	usr.UpdatedAt = rawUsr.UpdatedAt
+	usr.DeletedAt = rawUsr.DeletedAt
+
+	return
+}
+
 func (repo *Repo) DeleteUser(uid int32) (err error) {
 	ctx, cancel := context.WithTimeout(repo.Context, 3*time.Second)
 	defer cancel()
