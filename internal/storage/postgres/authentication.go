@@ -10,7 +10,7 @@ import (
 
 func (repo *Repo) AuthenticatePassword(
 	email, password string,
-) (authenticated bool) {
+) (authenticated bool, err error) {
 
 	// Retrieving the user's info + an indicator is_deleted from the database.
 	returnedRow, err := repo.queryEngine.GetUserByEmail(
@@ -36,9 +36,34 @@ func (repo *Repo) AuthenticatePassword(
 
 	// The hash was stored as a string using a base64 encoding so we need to decode it.
 	usrPassHashBinary, err := base64.StdEncoding.DecodeString(usrPassHashString)
+	if err != nil {
+		err = encryption.ErrPasswordAuthentication(
+			encryption.ErrPAsswordDecoding(nil),
+		)
+		log.Println(err)
+		return
+	}
+
+	inputPassBinary, err := base64.StdEncoding.DecodeString(password)
+	if err != nil {
+		err = encryption.ErrPasswordAuthentication(
+			encryption.ErrPAsswordDecoding(nil),
+		)
+		log.Println(err)
+		return
+	}
 
 	// Checking if the password is correct.
-	err = bcrypt.CompareHashAndPassword()
+	err = bcrypt.CompareHashAndPassword(usrPassHashBinary, inputPassBinary)
+	if err != nil {
+		err = encryption.ErrPasswordAuthentication(
+			encryption.ErrPasswordMismatch(nil),
+		)
+		log.Println(err)
+		return
+	}
+
+	authenticated = err == nil
 
 	return
 }

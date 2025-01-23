@@ -19,6 +19,10 @@ var (
 		return fmt.Errorf("error encoding password: %w", err)
 	}
 
+	ErrPAsswordDecoding EncryptionError = func(err error) error {
+		return fmt.Errorf("error decoding password: %w", err)
+	}
+
 	ErrPasswordMismatch EncryptionError = func(err error) error {
 		return fmt.Errorf("%w: %w",
 			bcrypt.ErrMismatchedHashAndPassword,
