@@ -7,6 +7,7 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 )
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -19,6 +20,86 @@ const deleteUser = `-- name: DeleteUser :exec
 func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+   select id, first_name, last_name, user_active, access_level, email, password_hash, deleted_at, created_at, updated_at,
+          deleted_at is null as is_deleted
+     from users
+    where email = $1
+`
+
+type GetUserByEmailRow struct {
+	ID           int32        `json:"id"`
+	FirstName    string       `json:"first_name"`
+	LastName     string       `json:"last_name"`
+	UserActive   bool         `json:"user_active"`
+	AccessLevel  int32        `json:"access_level"`
+	Email        string       `json:"email"`
+	PasswordHash string       `json:"password_hash"`
+	DeletedAt    sql.NullTime `json:"deleted_at"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    sql.NullTime `json:"updated_at"`
+	IsDeleted    interface{}  `json:"is_deleted"`
+}
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByEmail, email)
+	var i GetUserByEmailRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.UserActive,
+		&i.AccessLevel,
+		&i.Email,
+		&i.PasswordHash,
+		&i.DeletedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsDeleted,
+	)
+	return i, err
+}
+
+const getUserByID = `-- name: GetUserByID :one
+   select id, first_name, last_name, user_active, access_level, email, password_hash, deleted_at, created_at, updated_at,
+          deleted_at is null as is_deleted
+     from users
+    where id = $1
+`
+
+type GetUserByIDRow struct {
+	ID           int32        `json:"id"`
+	FirstName    string       `json:"first_name"`
+	LastName     string       `json:"last_name"`
+	UserActive   bool         `json:"user_active"`
+	AccessLevel  int32        `json:"access_level"`
+	Email        string       `json:"email"`
+	PasswordHash string       `json:"password_hash"`
+	DeletedAt    sql.NullTime `json:"deleted_at"`
+	CreatedAt    sql.NullTime `json:"created_at"`
+	UpdatedAt    sql.NullTime `json:"updated_at"`
+	IsDeleted    interface{}  `json:"is_deleted"`
+}
+
+func (q *Queries) GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i GetUserByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.FirstName,
+		&i.LastName,
+		&i.UserActive,
+		&i.AccessLevel,
+		&i.Email,
+		&i.PasswordHash,
+		&i.DeletedAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.IsDeleted,
+	)
+	return i, err
 }
 
 const insertUser = `-- name: InsertUser :one

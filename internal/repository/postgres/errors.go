@@ -5,14 +5,36 @@ import (
 	"fmt"
 )
 
-var (
-	ErrRecordNotFound = sql.ErrNoRows
-	ErrTxCommit       = fmt.Errorf("couldn't commit transaction")
-	ErrTxRollback     = fmt.Errorf("rollback (UsingTx = true)")
-	ErrDiscardedTx    = fmt.Errorf("rollback (UsingTx = false)")
-	// User errors.
-	ErrUpdatingPassword = fmt.Errorf("error updating password")
-	ErrInsertingUser    = fmt.Errorf("error inserting user")
-	// Token errors.
-	ErrDeleteToken = fmt.Errorf("error deleting token")
+type (
+	RepoError func(error) error
 )
+
+var ErrRecordNotFound RepoError = func(err error) error {
+	return fmt.Errorf("%w: %w", err, sql.ErrNoRows)
+}
+
+var ErrTxCommit RepoError = func(err error) error {
+	return fmt.Errorf("%w: couldn't commit transaction", err)
+}
+
+var ErrTxRollback RepoError = func(err error) error {
+	return fmt.Errorf("%w: rollback (UsingTx = true)", err)
+}
+
+var ErrDiscardedTx RepoError = func(err error) error {
+	return fmt.Errorf("%w: rollback (UsingTx = false)", err)
+}
+
+// User errors.
+var ErrUpdatingPassword RepoError = func(err error) error {
+	return fmt.Errorf("%w: error updating password", err)
+}
+
+var ErrInsertingUser RepoError = func(err error) error {
+	return fmt.Errorf("%w: error inserting user", err)
+}
+
+// Token errors.
+var ErrDeleteToken RepoError = func(err error) error {
+	return fmt.Errorf("%w: error deleting token", err)
+}

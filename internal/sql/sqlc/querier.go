@@ -15,6 +15,8 @@ type Querier interface {
 	DeleteTokenByUserID(ctx context.Context, userID int32) error
 	DeleteUser(ctx context.Context, id int32) error
 	GetTokenByID(ctx context.Context, arg GetTokenByIDParams) (GetTokenByIDRow, error)
+	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
+	GetUserByID(ctx context.Context, id int32) (GetUserByIDRow, error)
 	InsertRememberMeToken(ctx context.Context, arg InsertRememberMeTokenParams) error
 	InsertUser(ctx context.Context, arg InsertUserParams) (int32, error)
 	SetSystemPreference(ctx context.Context) error

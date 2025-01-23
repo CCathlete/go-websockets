@@ -1,3 +1,17 @@
+-- name: GetUserByEmail :one
+   select *,
+          deleted_at is null as is_deleted
+     from users
+    where email = $1
+;
+
+-- name: GetUserByID :one
+   select *,
+          deleted_at is null as is_deleted
+     from users
+    where id = $1
+;
+
 -- name: InsertUser :one
    insert into users (
           first_name,

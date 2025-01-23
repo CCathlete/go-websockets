@@ -1,11 +1,18 @@
 package postgresrepo
 
-func AuthenticatePassword(
-	repo *PGRepo,
+import "log"
+
+func (repo *PGRepo) AuthenticatePassword(
 	email, password string,
 ) (authenticated bool) {
 
-	// TODO: Implement the password authentication logic.
+	// Retrieving the user from the database.
+	returnedRow, err := repo.queryEngine.GetUserByEmail(
+		repo.Context, email,
+	)
+	if err != nil {
+		log.Printf("AuthenticatePassword: %v\n", err)
+	}
 
 	return
 }
