@@ -24,7 +24,7 @@ func HashPassword(password string,
 	)
 	if err != nil {
 		log.Printf("HashPassword: %v\n", err)
-		err = ErrPAsswordEncoding
+		err = ErrPAsswordEncoding(err)
 		return
 	}
 
@@ -33,14 +33,14 @@ func HashPassword(password string,
 	)
 	if err != nil {
 		log.Printf("HasPassword: %v\n", err)
-		err = ErrPasswordHasing
+		err = ErrPasswordHasing(err)
 		return
 	}
 
 	err = b64Encoder.Close()
 	if err != nil {
 		log.Printf("HashPassword: %v\n", err)
-		err = ErrPasswordHasing
+		err = ErrPasswordHasing(err)
 		return
 	}
 
